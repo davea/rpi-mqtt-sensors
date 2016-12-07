@@ -27,14 +27,11 @@ def main():
         messages = []
         for sensor, topic in sensor_topics:
             temperature = sensor.get_temperature()
-            print("Temperature of {}: {}".format(sensor.id, temperature))
             messages.append({'topic': topic, 'payload': str(temperature)})
-            print(messages[-1])
         if messages:
             publish.multiple(messages, hostname=config['mqtt']['broker'])
         else:
             print("No messages to publish, bit weird.")
-        print("Sleeping for {} seconds...".format(config['general']['delay']))
         sleep(int(config['general']['delay']))
 
 if __name__ == '__main__':
