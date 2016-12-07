@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 from time import sleep
+from socket import gethostname
 
 from w1thermsensor import W1ThermSensor
 import paho.mqtt.publish as publish
 
 BROKER="10.0.1.216"
-TOPIC="sensor/temperature/utility"
+TOPIC="sensor/temperature/{}".format(gethostname())
 DELAY=10
 
 def main():
