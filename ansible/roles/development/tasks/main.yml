@@ -1,0 +1,13 @@
+- include: rmate.yml
+
+- name: Setup bash aliases for pi
+  copy:
+    src: bash_aliases
+    dest: /home/pi/.bash_aliases
+    owner: pi
+    group: pi
+
+- name: Setup bash aliases for root
+  copy:
+    src: bash_aliases
+    dest: /root/.bash_aliases

@@ -1,0 +1,12 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: Set up server
+  hosts: all
+  become: yes
+  pre_tasks:
+    - name: Update APT
+      apt: update_cache=yes
+  roles:
+    - github
+    - development
+    - temperature_sensor

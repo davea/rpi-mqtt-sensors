@@ -1,0 +1,11 @@
+[sensors]
+{% for id, suffix in sensors.iteritems() %}
+{{ id }}={{ suffix }}
+{% endfor %}
+
+[mqtt]
+broker={{ mqtt_broker }}
+topic_prefix=sensor/temperature/
+
+[general]
+delay={{ delay }}

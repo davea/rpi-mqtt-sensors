@@ -1,0 +1,8 @@
+- name: Install rubygems package
+  apt: name=rubygems
+
+- name: Install rmate gem
+  gem: name=rmate user_install=no
+
+- name: Copy rmate.rc into place
+  copy: src=rmate.rc dest=/etc/rmate.rc

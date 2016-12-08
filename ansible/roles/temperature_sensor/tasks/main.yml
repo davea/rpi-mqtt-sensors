@@ -1,0 +1,45 @@
+- name: Enable one-wire device tree overlay
+  shell: grep -q -E "^dtoverlay=w1-gpio" /boot/config.txt || echo "dtoverlay=w1-gpio" >> /boot/config.txt
+
+- name: Install needed packages
+  apt: name={{ item }} state=latest
+  with_items:
+    - supervisor
+    - python3
+    - python3-pip
+    - python3-w1thermsensor
+
+- name: Fetch site from github
+  become_user: pi
+  git:
+    repo: ssh://git@github.com/davea/home.git
+    dest: /home/pi/home
+    accept_hostkey: yes
+
+- name: Set up Python packages
+  pip:
+    executable: pip3
+    requirements: /home/pi/home/temperature/raspberrypi/requirements.txt
+
+- name: Setup config dir
+  file:
+    path: /home/pi/.config/homesense
+    state: directory
+    owner: pi
+    group: pi
+
+- name: Install temperature sensor configuration
+  template:
+    src: temperature.ini.j2
+    dest: /home/pi/.config/homesense/temperature.ini
+    owner: pi
+    group: pi
+
+- name: Setup supervisor task
+  copy:
+    src: supervisor.conf
+    dest: /etc/supervisor/conf.d/temperature_sensor.conf
+    owner: root
+    group: root
+  notify:
+    - reload supervisor
