@@ -24,6 +24,8 @@
   git:
     repo: https://github.com/davea/rpi-mqtt-sensors.git
     dest: /home/pi/rpi-mqtt-sensors
+  notify:
+    - reload supervisor
 
 - name: Set up Python packages
   pip:
@@ -43,6 +45,8 @@
     dest: /home/pi/.config/homesense/temperature.ini
     owner: pi
     group: pi
+  notify:
+    - reload supervisor
 
 - name: Setup supervisor task
   copy:
