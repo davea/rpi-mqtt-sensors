@@ -5,9 +5,13 @@
 ; formed from topic_prefix, the hostname and their id. If, however, only a
 ; single sensor is connected and it's not present here then the id will not
 ; be suffixed to the topic name.
-[sensors]
+[w1sensors]
 0123456789ab=inside
 cdef01234567=outside
+
+[bme680sensors]
+0x76=upstairs
+0x77=downstairs
 
 [mqtt]
 broker=192.168.1.1
