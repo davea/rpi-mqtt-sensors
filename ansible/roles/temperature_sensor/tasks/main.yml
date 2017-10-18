@@ -14,14 +14,13 @@
 - name: Fetch code from github
   become_user: pi
   git:
-    repo: ssh://git@github.com/davea/home.git
-    dest: /home/pi/home
-    accept_hostkey: yes
+    repo: https://github.com/davea/rpi-mqtt-sensors.git
+    dest: /home/pi/rpi-mqtt-sensors
 
 - name: Set up Python packages
   pip:
     executable: pip3
-    requirements: /home/pi/home/temperature/raspberrypi/requirements.txt
+    requirements: /home/pi/rpi-mqtt-sensors/requirements.txt
 
 - name: Setup config dir
   file:
