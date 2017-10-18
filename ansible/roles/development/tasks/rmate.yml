@@ -1,8 +1,0 @@
-- name: Download rmate-bash
-  get_url:
-    url: https://raw.githubusercontent.com/aurora/rmate/7ddca1f962dfffe9226fa547ccd8c5b7347ef9d7/rmate
-    dest: /usr/bin/rmate
-    mode: 0755
-
-- name: Copy rmate.rc into place
-  copy: src=rmate.rc dest=/etc/rmate.rc
