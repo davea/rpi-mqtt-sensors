@@ -1,7 +1,16 @@
-[sensors]
-{% for id, suffix in sensors.iteritems() %}
+[w1sensors]
+{% if w1sensors is defined %}
+{% for id, suffix in w1sensors.iteritems() %}
 {{ id }}={{ suffix }}
 {% endfor %}
+{% endif %}
+
+[bme680sensors]
+{% if bme680sensors is defined %}
+{% for id, suffix in bme680sensors.iteritems() %}
+{{ id }}={{ suffix }}
+{% endfor %}
+{% endif %}
 
 [mqtt]
 broker={{ mqtt_broker }}
