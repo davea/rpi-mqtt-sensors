@@ -89,7 +89,11 @@ class BME680Sensor(BaseSensor):
         # If there's nothing in the ini file, then create one sensor
         # with the default i2c address and mqtt id from the hostname
         if not sensors:
-            sensors.append(cls(gethostname()))
+            try:
+                sensors.append(cls(gethostname()))
+            except OSError:
+                # Perhaps there's no BME680 sensor attached?
+                pass
 
         return sensors
 
