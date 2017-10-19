@@ -14,10 +14,10 @@ config.read(expanduser("~/.config/homesense/temperature.ini"))
 
 
 class BaseSensor:
-    id = None
+    mqtt_id = None
 
     def topic_for_attribute(self, attribute):
-        return config['mqtt']['topic_format'].format(attribute=attribute, id=self.id)
+        return config['mqtt']['topic_format'].format(attribute=attribute, id=self.mqtt_id)
 
     @property
     def topics_and_values(self):
@@ -25,19 +25,38 @@ class BaseSensor:
 
 
 class W1Sensor(BaseSensor):
+    _sensor = None
+
+    def __init__(self, mqtt_id, sensor):
+        self.mqtt_id = mqtt_id
+        self._sensor = sensor
+
+
+    @property
+    def topics_and_values(self):
+        yield (self.topic_for_attribute('temperature'), self._sensor.get_temperature())
+
+
     @classmethod
     def create_sensors(cls):
-        # sensors = W1ThermSensor.get_available_sensors()
-            # sensor_topics = list(zip(sensors, get_sensor_topics(sensors)))
+        sensors = W1ThermSensor.get_available_sensors()
+        hostname = gethostname()
 
-        return []
+        if len(sensors) == 1:
+            sensor = sensors[0]
+            mqtt_id = config['w1sensors'].get(sensor.id, hostname)
+            yield cls(mqtt_id=mqtt_id, sensor=sensor)
+        else:
+            for sensor in sensors:
+                mqtt_id = config['w1sensors'].get(sensor.id, "{}_{}".format(hostname, sensor.id))
+                yield cls(mqtt_id=mqtt_id, sensor=sensor)
 
 
 class BME680Sensor(BaseSensor):
     _sensor = None
 
-    def __init__(self, id, i2c_addr=None):
-        self.id = id
+    def __init__(self, mqtt_id, i2c_addr=None):
+        self.mqtt_id = mqtt_id
         if i2c_addr:
             self._sensor = bme680.BME680(i2c_addr=i2c_addr)
         else:
@@ -75,22 +94,14 @@ class BME680Sensor(BaseSensor):
         return sensors
 
 
-def get_sensor_topics(sensors, configkey):
-    for sensor in sensors:
-        if len(sensors) == 1:
-            suffix = config['w1sensors'].get(sensor.id, gethostname())
-        else:
-            suffix = config['w1sensors'].get(sensor.id, "{}_{}".format(gethostname(), sensor.id))
-        yield "{}{}".format(config['mqtt']['topic_prefix'], suffix)
-
-
 def main():
     sensors = []
     sensors.extend(BME680Sensor.create_sensors())
     sensors.extend(W1Sensor.create_sensors())
 
-    if len(sensors) == 0:
+    if not sensors:
         raise Exception("No sensors found.")
+
     while True:
         messages = []
         for sensor in sensors:
