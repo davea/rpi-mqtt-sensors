@@ -1,0 +1,63 @@
+- name: Enable one-wire device tree overlay and i2c
+  lineinfile: dest=/boot/config.txt line={{ item }}
+  with_items:
+    - dtoverlay=w1-gpio
+    - dtparam=i2c_arm=on
+
+- name: Enable i2c kernel module
+  lineinfile:
+    dest: /etc/modules
+    line: i2c-dev
+
+- name: Install needed packages
+  apt: name={{ item }} state=latest
+  with_items:
+    - git
+    - supervisor
+    - python3
+    - python3-pip
+    - python3-w1thermsensor
+    - python3-smbus
+
+- name: Fetch code from github
+  become_user: pi
+  git:
+    repo: https://github.com/davea/rpi-mqtt-sensors.git
+    dest: /home/pi/rpi-mqtt-sensors
+  notify:
+    - reload supervisor
+
+- name: Set up Python packages
+  pip:
+    executable: pip3
+    requirements: /home/pi/rpi-mqtt-sensors/requirements.txt
+
+- name: Setup config dir
+  file:
+    path: /home/pi/.config/homesense
+    state: directory
+    owner: pi
+    group: pi
+
+- name: Install temperature sensor configuration
+  template:
+    src: temperature.ini.j2
+    dest: /home/pi/.config/homesense/temperature.ini
+    owner: pi
+    group: pi
+  notify:
+    - reload supervisor
+
+- name: Setup supervisor task
+  copy:
+    src: supervisor.conf
+    dest: /etc/supervisor/conf.d/temperature_sensor.conf
+    owner: root
+    group: root
+  notify:
+    - reload supervisor
+
+- name: Disable SSH password logins
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    line: PasswordAuthentication no
