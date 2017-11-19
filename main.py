@@ -66,17 +66,26 @@ class BME680Sensor(BaseSensor):
         self._sensor.set_pressure_oversample(bme680.OS_8X)
         self._sensor.set_temperature_oversample(bme680.OS_8X)
         self._sensor.set_filter(bme680.FILTER_SIZE_3)
+        self._sensor.set_gas_status(bme680.ENABLE_GAS_MEAS)
+        self._sensor.set_gas_heater_temperature(320)
+        self._sensor.set_gas_heater_duration(150)
+        self._sensor.select_gas_heater_profile(0)
 
     @property
     def topics_and_values(self):
-        if self._sensor.get_sensor_data():
-            return [
-                (self.topic_for_attribute('temperature'), self._sensor.data.temperature),
-                (self.topic_for_attribute('humidity'), self._sensor.data.humidity),
-                (self.topic_for_attribute('pressure'), self._sensor.data.pressure),
-            ]
+        attempts = 60
+        for data, stable in ((self._sensor.get_sensor_data(), self._sensor.data.heat_stable) for _ in range(attempts)):
+            if data and stable:
+                break
+            sleep(0.5)
         else:
             return []
+        return [
+            (self.topic_for_attribute('temperature'), self._sensor.data.temperature),
+            (self.topic_for_attribute('humidity'), self._sensor.data.humidity),
+            (self.topic_for_attribute('pressure'), self._sensor.data.pressure),
+            (self.topic_for_attribute('gas_resistance'), self._sensor.data.gas_resistance),
+        ]
 
     @classmethod
     def create_sensors(cls):
