@@ -1,2 +1,2 @@
-paho-mqtt==1.2
-bme680==1.0.2
+paho-mqtt==1.3.1
+-e git+https://github.com/pimoroni/bme680.git@d9970151cd9d20b7f49a4ee6ece7005c108d56a3#egg=bme680&subdirectory=library
