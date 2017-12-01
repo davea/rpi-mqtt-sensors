@@ -6,12 +6,14 @@ from os.path import expanduser
 
 from w1thermsensor import W1ThermSensor
 import bme680
+import smbus
 
 import paho.mqtt.publish as publish
 
 config = ConfigParser()
 config.read(expanduser("~/.config/homesense/temperature.ini"))
 
+I2C_BUS_ID = 0
 
 class BaseSensor:
     mqtt_id = None
@@ -57,10 +59,12 @@ class BME680Sensor(BaseSensor):
 
     def __init__(self, mqtt_id, i2c_addr=None):
         self.mqtt_id = mqtt_id
+        i2c_device = smbus.SMBus(I2C_BUS_ID)
+
         if i2c_addr:
-            self._sensor = bme680.BME680(i2c_addr=i2c_addr)
+            self._sensor = bme680.BME680(i2c_addr=i2c_addr, i2c_device=i2c_device)
         else:
-            self._sensor = bme680.BME680()
+            self._sensor = bme680.BME680(i2c_device=i2c_device)
 
         self._sensor.set_humidity_oversample(bme680.OS_8X)
         self._sensor.set_pressure_oversample(bme680.OS_8X)
