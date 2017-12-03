@@ -1,0 +1,17 @@
+[Unit]
+Description=MQTT Temperature Sensor daemon
+After=syslog.target network.target
+Documentation=https://github.com/davea/rpi-mqtt-sensors
+
+[Service]
+ExecStart=/home/pi/rpi-mqtt-sensors/main.py
+WorkingDirectory=/home/pi/rpi-mqtt-sensors
+User=pi
+Group=pi
+SyslogIdentifier=nodehap
+StandardOutput=syslog
+Restart=always
+KillSignal=SIGINT
+
+[Install]
+WantedBy=multi-user.target

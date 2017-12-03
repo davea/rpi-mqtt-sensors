@@ -13,7 +13,6 @@
   apt: name={{ item }} state=latest
   with_items:
     - git
-    - supervisor
     - python3
     - python3-pip
     - python3-w1thermsensor
@@ -25,7 +24,7 @@
     repo: https://github.com/davea/rpi-mqtt-sensors.git
     dest: /home/pi/rpi-mqtt-sensors
   notify:
-    - reload supervisor
+    - reload temperature_sensor
 
 - name: Set up Python packages
   pip:
@@ -46,18 +45,17 @@
     owner: pi
     group: pi
   notify:
-    - reload supervisor
+    - reload temperature_sensor
 
-- name: Setup supervisor task
+- name: Create systemd service
   copy:
-    src: supervisor.conf
-    dest: /etc/supervisor/conf.d/temperature_sensor.conf
+    src: temperature_sensor.service
+    dest: /etc/systemd/system/temperature_sensor.service
     owner: root
     group: root
-  notify:
-    - reload supervisor
 
-- name: Disable SSH password logins
-  lineinfile:
-    dest: /etc/ssh/sshd_config
-    line: PasswordAuthentication no
+- name: Enable systemd service
+  systemd:
+    enabled: yes
+    state: started
+    name: temperature_sensor

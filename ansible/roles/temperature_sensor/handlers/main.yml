@@ -1,3 +1,2 @@
-- name: reload supervisor
-  supervisorctl: name=temperature_sensor state=restarted
-  ignore_errors: yes
+- name: reload temperature_sensor
+  systemd: name=temperature_sensor state=restarted
