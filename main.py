@@ -13,7 +13,6 @@ import paho.mqtt.publish as publish
 config = ConfigParser()
 config.read(expanduser("~/.config/homesense/temperature.ini"))
 
-I2C_BUS_ID = 0
 
 class BaseSensor:
     mqtt_id = None
@@ -57,9 +56,8 @@ class W1Sensor(BaseSensor):
 class BME680Sensor(BaseSensor):
     _sensor = None
 
-    def __init__(self, mqtt_id, i2c_addr=None):
+    def __init__(self, mqtt_id, i2c_addr=None, i2c_device=None):
         self.mqtt_id = mqtt_id
-        i2c_device = smbus.SMBus(I2C_BUS_ID)
 
         if i2c_addr:
             self._sensor = bme680.BME680(i2c_addr=i2c_addr, i2c_device=i2c_device)
@@ -95,15 +93,23 @@ class BME680Sensor(BaseSensor):
     def create_sensors(cls):
         sensors = []
 
+        i2c_device = None
+        # bme680 doesn't always seem to appear on the same i2c bus...
+        for bus_id in (0, 1):
+            try:
+                i2c_device = smbus.SMBus(bus_id)
+            except FileNotFoundError:
+                pass
+
         # Create sensors based on what's in the ini file
         for i2c_addr, mqtt_id in config['bme680sensors'].items():
-            sensors.append(cls(mqtt_id, int(i2c_addr, 16)))
+            sensors.append(cls(mqtt_id, i2c_addr=int(i2c_addr, 16), i2c_device=i2c_device))
 
         # If there's nothing in the ini file, then create one sensor
         # with the default i2c address and mqtt id from the hostname
         if not sensors:
             try:
-                sensors.append(cls(gethostname()))
+                sensors.append(cls(gethostname(), i2c_device=i2c_device))
             except OSError:
                 # Perhaps there's no BME680 sensor attached?
                 pass
