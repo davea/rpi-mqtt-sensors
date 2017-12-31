@@ -41,7 +41,7 @@ class W1Sensor(BaseSensor):
     @classmethod
     def create_sensors(cls):
         sensors = W1ThermSensor.get_available_sensors()
-        hostname = gethostname()
+        hostname = config['general'].get('hostname', gethostname().split('.')[0])
 
         if len(sensors) == 1:
             sensor = sensors[0]
@@ -108,8 +108,9 @@ class BME680Sensor(BaseSensor):
         # If there's nothing in the ini file, then create one sensor
         # with the default i2c address and mqtt id from the hostname
         if not sensors:
+            hostname = config['general'].get('hostname', gethostname().split('.')[0])
             try:
-                sensors.append(cls(gethostname(), i2c_device=i2c_device))
+                sensors.append(cls(hostname, i2c_device=i2c_device))
             except OSError:
                 # Perhaps there's no BME680 sensor attached?
                 pass

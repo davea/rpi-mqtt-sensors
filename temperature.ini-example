@@ -20,3 +20,7 @@ topic_prefix=sensor/temperature/
 [general]
 ; How long to wait in seconds between each temperature reading
 delay=10
+; Hostname to include in mqtt topic, if sensors don't have topics
+; explicitly set. This can be omitted and the first part of the
+; device's fqdn will be used.
+hostname=example
