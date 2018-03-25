@@ -4,7 +4,15 @@ from socket import gethostname
 from configparser import ConfigParser
 from os.path import expanduser
 
-from w1thermsensor import W1ThermSensor
+try:
+    from w1thermsensor import W1ThermSensor
+except Exception:
+    # Can't use the actual exception class that's thrown
+    # (w1thermsensor.errors.KernelModuleLoadError) because we can't import it
+    # without it being thrown. Oops.
+    # One-Wire might not be enabled on this Raspbian host, nevermind.
+    W1ThermSensor = None
+
 import bme680
 import smbus
 
@@ -40,6 +48,8 @@ class W1Sensor(BaseSensor):
 
     @classmethod
     def create_sensors(cls):
+        if W1ThermSensor is None:
+            return
         sensors = W1ThermSensor.get_available_sensors()
         hostname = config['general'].get('hostname', gethostname().split('.')[0])
 
