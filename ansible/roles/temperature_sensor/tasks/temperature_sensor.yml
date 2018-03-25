@@ -21,15 +21,15 @@
 - name: Fetch code from github
   become_user: pi
   git:
-    repo: https://github.com/davea/rpi-mqtt-sensors.git
-    dest: /home/pi/rpi-mqtt-sensors
+    repo: https://github.com/davea/temperature_sensor.git
+    dest: /home/pi/temperature_sensor
   notify:
     - reload temperature_sensor
 
 - name: Set up Python packages
   pip:
     executable: pip3
-    requirements: /home/pi/rpi-mqtt-sensors/requirements.txt
+    requirements: /home/pi/temperature_sensor/requirements.txt
 
 - name: Setup config dir
   file:

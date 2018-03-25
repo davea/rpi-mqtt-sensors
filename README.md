@@ -1,4 +1,4 @@
-# rpi-mqtt-sensors
+# temperature_sensor
 
 A little Python script to read temperature/humidity/etc values from a
 BME680 or DS18B20 sensor and publish to MQTT topics.
