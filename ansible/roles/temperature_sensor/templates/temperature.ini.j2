@@ -1,23 +1,23 @@
 [w1sensors]
-{% if w1sensors is defined %}
-{% for id, suffix in w1sensors.iteritems() %}
+{% if temperature_sensor.w1sensors is defined %}
+{% for id, suffix in temperature_sensor.w1sensors.iteritems() %}
 {{ id }}={{ suffix }}
 {% endfor %}
 {% endif %}
 
 [bme680sensors]
-{% if bme680sensors is defined %}
-{% for id, suffix in bme680sensors.iteritems() %}
+{% if temperature_sensor.bme680sensors is defined %}
+{% for id, suffix in temperature_sensor.bme680sensors.iteritems() %}
 {{ id }}={{ suffix }}
 {% endfor %}
 {% endif %}
 
 [mqtt]
-broker={{ mqtt_broker }}
+broker={{ temperature_sensor.mqtt.broker }}
 topic_format=sensor/{attribute}/{id}
 
 [general]
-delay={{ delay }}
+delay={{ temperature_sensor.delay }}
 {% if hostname is defined %}
 hostname={{ hostname }}
 {% endif %}

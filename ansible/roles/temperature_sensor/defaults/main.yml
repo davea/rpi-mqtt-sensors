@@ -1,0 +1,4 @@
+temperature_sensor:
+  delay: 60
+  mqtt:
+    broker: mqtt
