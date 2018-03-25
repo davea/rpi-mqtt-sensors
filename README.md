@@ -1,8 +1,9 @@
-# temperature_sensor
+radcontrold
+===========
 
-A little Python script to read temperature/humidity/etc values from a
-BME680 or DS18B20 sensor and publish to MQTT topics.
+This role installs [temperature_sensor](https://github.com/davea/temperature_sensor) on a Raspbian host.
 
-Intended for use on a Raspberry Pi, but might work elsewhere.
+License
+-------
 
-There's an Ansible playbook for setting things up on a target host quickly.
+MIT

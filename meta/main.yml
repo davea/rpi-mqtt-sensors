@@ -1,0 +1,15 @@
+galaxy_info:
+  author: Dave Arter
+  description: Installs & configures temperature_sensor on a Raspberry Pi.
+  license: MIT
+
+  min_ansible_version: 1.2
+
+  platforms:
+    - name: Debian
+      versions:
+        - stretch
+
+  galaxy_tags: []
+
+dependencies: []
