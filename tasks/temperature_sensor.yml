@@ -1,7 +1,12 @@
-- name: Enable one-wire device tree overlay and i2c
+- name: Enable one-wire device tree overlay
   lineinfile: dest=/boot/config.txt line={{ item }}
   with_items:
     - dtoverlay=w1-gpio
+  when: temperature_sensor.w1sensors is defined
+
+- name: Enable i2c
+  lineinfile: dest=/boot/config.txt line={{ item }}
+  with_items:
     - dtparam=i2c_arm=on
 
 - name: Enable i2c kernel module
