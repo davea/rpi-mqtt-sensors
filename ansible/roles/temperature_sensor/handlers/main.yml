@@ -1,2 +1,0 @@
-- name: reload temperature_sensor
-  systemd: name=temperature_sensor state=restarted
